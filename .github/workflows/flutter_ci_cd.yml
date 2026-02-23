@@ -34,14 +34,15 @@ jobs:
           name: app-setup
           path: ./${{ github.sha }}.tar.gz
           retention-days: 0
+
   qa-check:
     needs: [setup]
     name: Quality Assurance (Lint & Test)
     runs-on: ubuntu-latest
     steps:
       - name: Download artifact
-      - uses: actions/download-artifact@v4
-      - with:
+        uses: actions/download-artifact@v4
+        with:
           name: app-setup
           path: ./
 
