@@ -118,7 +118,6 @@ jobs:
       - name: Install dependencies
         run: |
           flutter pub get
-          cd ios && bundle install
 
       - name: Flutter build ipa
         run: |
