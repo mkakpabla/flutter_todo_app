@@ -144,4 +144,4 @@ jobs:
     steps:
       - uses: geekyeggo/delete-artifact@v5
         with:
-          name: app-build
+          name: app-setup
