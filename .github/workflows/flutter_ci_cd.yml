@@ -109,11 +109,32 @@ jobs:
         with:
           flutter-version: '3.38.9'
 
-      - name: Install dependencies
-        run: flutter pub get
+      - name: Install Ruby (for Fastlane)
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          bundle-cache: true
 
-      - name: Build iOS
-        run: flutter build ios --release --no-codesign
+      - name: Install dependencies
+        run: |
+          flutter pub get
+          cd ios && bundle install
+
+      - name: Flutter build ipa
+        run: |
+          flutter build ipa --no-codesign
+
+      - name: Compress Archives and IPAs
+        run: |
+          cd build
+          tar -czf ios_build.tar.gz ios
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Releases
+          path: |
+            build/ios_build.tar.gz
 
   clean-up:
     name: Clean up
