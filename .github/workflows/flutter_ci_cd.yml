@@ -36,9 +36,9 @@ jobs:
           path: ./${{ github.sha }}.tar.gz
           retention-days: 0
 
-  qa-check:
+  lint-test:
     needs: [setup]
-    name: Quality Assurance (Lint & Test)
+    name: Lint & Test
     runs-on: ubuntu-latest
     steps:
       - name: Download artifact
@@ -62,3 +62,53 @@ jobs:
 
       - name: Run Tests
         run: flutter test
+
+  build-android:
+    needs: [lint-test]
+    name: Build Android APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.38.9'
+          channel: stable
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze code
+        run: flutter analyze
+
+      - name: Run tests
+        run: flutter test
+
+      - name: Build APK
+        run: flutter build apk --release
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: android-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+
+  build-ios:
+    name: Build iOS for TestFlight
+    runs-on: macos-latest
+    needs: [lint-test]
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.19.0'
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build iOS
+        run: flutter build ios --release --no-codesign
