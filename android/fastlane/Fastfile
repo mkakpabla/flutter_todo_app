@@ -1,0 +1,14 @@
+default_platform(:android)
+
+platform :android do
+  desc "Build l'AAB et l'envoie sur le circuit de test interne"
+  lane :deploy_internal do
+    sh "flutter build appbundle --release"
+
+    upload_to_play_store(
+      track: 'internal',
+      aab: '../build/app/outputs/bundle/release/app-release.aab',
+      json_key_data: ENV['PLAY_STORE_CONFIG_JSON']
+    )
+  end
+end
